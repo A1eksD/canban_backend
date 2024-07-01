@@ -1,11 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-
-from canbanBackend.views import TaskViewSet, UserViewSet
-
-
-
-
+from canbanBackend.views import TaskViewSet, UserViewSet, register_user
 
 
 # Create a router and register our ViewSets with it.

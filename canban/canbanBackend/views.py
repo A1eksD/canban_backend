@@ -1,6 +1,7 @@
-from django.shortcuts import render
+# from django.http import HttpResponseRedirect
+# from django.shortcuts import redirect, render
 from rest_framework import viewsets
-from canbanBackend.models import Task, User
+from canbanBackend.models import Task, User, SubTask
 from canbanBackend.permissions import IsOwnerOrReadOnly
 from canbanBackend.serializers import SubtaskSerializer, TaskSerializer, UserSerializer
 from rest_framework import authentication, permissions
@@ -9,7 +10,26 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from django.contrib.auth import logout
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, permission_classes
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_user(request):
+    if request.method == 'POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    
 
 class TaskViewSet(viewsets.ModelViewSet):  # Definition eines ModelViewSets für Snippets
     """
@@ -22,9 +42,9 @@ class TaskViewSet(viewsets.ModelViewSet):  # Definition eines ModelViewSets für
                           IsOwnerOrReadOnly]  # Benutzer können nur ihre eigenen Snippets ändern
 
 
-# class SubTask(viewsets.ReadOnlyModelViewSet):
-#     queryset = SubTask.objects.all()
-#     serializer_class = SubtaskSerializer 
+class SubTask(viewsets.ReadOnlyModelViewSet):
+    queryset = SubTask.objects.all()
+    serializer_class = SubtaskSerializer 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
@@ -49,3 +69,4 @@ class LogoutView(APIView):
     def post(self, request, format=None):
         logout(request)
         return Response({'message': 'Logout successful'})
+    

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-1%fd(jf&39h#ezywwf=j5r@27(v_pkkni9=a4bfye-m!95h+_#
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'loacalhost',
+    'localhost',
     '127.0.0.1'
 ]
 
@@ -41,8 +41,12 @@ REST_FRAMEWORK = {
     ),
 }
 
+# CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200"
+    "http://localhost:4200",
+    "http://localhost:8000",
+    "http://127.0.0.1:4200",
+    "http://127.0.0.1:8000",
 ]
 
 # Application definition
@@ -71,7 +75,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-ROOT_URLCONF = 'canbanBackend.urls'
+ROOT_URLCONF = 'canban.urls'
 
 TEMPLATES = [
     {
