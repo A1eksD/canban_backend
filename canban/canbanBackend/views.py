@@ -1,5 +1,6 @@
 # from django.http import HttpResponseRedirect
 # from django.shortcuts import redirect, render
+from django.forms import ValidationError
 from rest_framework import viewsets
 from canbanBackend.models import Task, User, SubTask
 from canbanBackend.permissions import IsOwnerOrReadOnly
@@ -15,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 
 @api_view(['POST'])
@@ -28,10 +29,12 @@ def register_user(request):
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
+
+
+ 
     
 
-class TaskViewSet(viewsets.ModelViewSet):  # Definition eines ModelViewSets für Snippets
+class TaskViewSet(viewsets.ModelViewSet):
     """
     Dieses ViewSet stellt automatisch `list`, `create`, `retrieve`,
     `update` und `destroy` Aktionen bereit.
@@ -39,9 +42,9 @@ class TaskViewSet(viewsets.ModelViewSet):  # Definition eines ModelViewSets für
     queryset = Task.objects.all() 
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,  # Nur authentifizierte Benutzer können Daten ändern
-                          IsOwnerOrReadOnly]  # Benutzer können nur ihre eigenen Snippets ändern
-
-
+                          IsOwnerOrReadOnly, IsAuthenticated]  # Benutzer können nur ihre eigenen Snippets ändern
+        
+        
 class SubTask(viewsets.ReadOnlyModelViewSet):
     queryset = SubTask.objects.all()
     serializer_class = SubtaskSerializer 
