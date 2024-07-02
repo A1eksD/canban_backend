@@ -27,10 +27,7 @@ class Task(models.Model):
     creator = models.ForeignKey('auth.User', related_name='task', on_delete=models.CASCADE, default=1)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=1)
     assigned_users = models.ManyToManyField(User, related_name='tasks', blank=True)
-    # subtasks = models.ForeignKey(SubTask, related_name='tasks', on_delete=models.CASCADE, default=1)
-    subtasks = models.ForeignKey(SubTask, related_name='tasks', on_delete=models.CASCADE, blank=True, null=True)
-
-    # subtasks = models.OneToManyField('SubTask', on_delete=models.CASCADE, default='')
+    subtasks = models.ManyToManyField(SubTask, blank=True)
 
 
     def __str__(self):
