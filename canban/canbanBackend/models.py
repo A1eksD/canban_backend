@@ -1,25 +1,10 @@
 
 from django.db import models
 from django.conf import settings
-
 from canbanBackend.class_assest import PRIORITY_CHOICES
+from django.contrib.auth.models import User
 
 
-
-class User(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return f'({self.id}) {self.name}'
-
-
-class SubTask(models.Model):
-    name = models.CharField(max_length=100)
-    is_checked = models.BooleanField(default=False)  
-        
-        
 class Task(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=100)
@@ -27,10 +12,16 @@ class Task(models.Model):
     creator = models.ForeignKey('auth.User', related_name='task', on_delete=models.CASCADE, default=1)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=1)
     assigned_users = models.ManyToManyField(User, related_name='tasks', blank=True)
-    subtasks = models.ManyToManyField(SubTask, blank=True)
-
 
     def __str__(self):
         return f'({self.id}) {self.title}'
-    
-        
+
+
+class SubTask(models.Model):
+    task = models.ForeignKey(Task, related_name='subtasks', on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=100)
+    is_checked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'({self.id}) {self.name}'
+
