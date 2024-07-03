@@ -21,15 +21,31 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def register_user(request):
+#     serialized = UserSerializer(data=request.data)
+#     if serialized.is_valid():
+#         return Response(serialized.data, status=status.HTTP_201_CREATED)
+#     else:
+#         return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
     serialized = UserSerializer(data=request.data)
     if serialized.is_valid():
-        return Response(serialized.data, status=status.HTTP_201_CREATED)
+        user = serialized.save()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email
+        }, status=status.HTTP_201_CREATED)
     else:
-        return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
