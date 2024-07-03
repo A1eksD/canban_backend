@@ -22,7 +22,7 @@ class SubtaskSerializer(serializers.ModelSerializer):
     # owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
         model = SubTask
-        fields = ['name', 'is_checked']
+        fields = ['id', 'name', 'is_checked']
         
         
 class TaskSerializer(serializers.ModelSerializer):
@@ -59,6 +59,7 @@ class TaskSerializer(serializers.ModelSerializer):
         instance.assigned_users.set(assigned_users_data)  # Verwendung von .set() für Many-to-Many-Feld
 
         return instance
+
         
         
         
