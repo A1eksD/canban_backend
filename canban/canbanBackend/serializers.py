@@ -60,7 +60,12 @@ class TaskSerializer(serializers.ModelSerializer):
 
         return instance
 
-        
+
+class PublicUserSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['username']
         
 
 class UserSerializer(serializers.ModelSerializer):

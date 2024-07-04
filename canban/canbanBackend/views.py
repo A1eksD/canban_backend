@@ -4,7 +4,7 @@ from django.forms import ValidationError
 from rest_framework import viewsets
 from canbanBackend.models import Task, User, SubTask
 from canbanBackend.permissions import IsOwnerOrReadOnly
-from canbanBackend.serializers import SubtaskSerializer, TaskSerializer, UserSerializer
+from canbanBackend.serializers import PublicUserSerializer, SubtaskSerializer, TaskSerializer, UserSerializer
 from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -50,13 +50,14 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     
         
-class SubTask(viewsets.ReadOnlyModelViewSet):
+class SubTaskViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SubTask.objects.all()
     serializer_class = SubtaskSerializer 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+
+class PublicUserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer 
+    serializer_class = PublicUserSerializer 
 
 
 
@@ -75,6 +76,7 @@ class LoginView(ObtainAuthToken):
             'user_id': user.pk,
             'email': user.email
         })
+        
         
 class LogoutView(APIView):
     def post(self, request, format=None):
