@@ -40,7 +40,9 @@ class TaskSerializer(serializers.ModelSerializer):
         task = Task.objects.create(**validated_data)
         for subtask_data in subtasks_data:
             SubTask.objects.create(task=task, **subtask_data)
-        task.assigned_users.set(assigned_users_data)  # Verwendung von .set() für Many-to-Many-Feld
+        # for assigned_users in assigned_users:
+        #     User.objects.create(task=task, **assigned_users)
+        task.assigned_users.set(assigned_users_data)
         return task
 
     def update(self, instance, validated_data):
@@ -56,7 +58,7 @@ class TaskSerializer(serializers.ModelSerializer):
         for subtask_data in subtasks_data:
             SubTask.objects.create(task=instance, **subtask_data)
 
-        instance.assigned_users.set(assigned_users_data)  # Verwendung von .set() für Many-to-Many-Feld
+        instance.assigned_users.set(assigned_users_data)
 
         return instance
 
@@ -65,7 +67,7 @@ class PublicUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['id','username']
         
 
 class UserSerializer(serializers.ModelSerializer):
