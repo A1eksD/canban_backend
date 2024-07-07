@@ -50,7 +50,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     
         
-class SubTaskViewSet(viewsets.ReadOnlyModelViewSet):
+class SubTaskViewSet(viewsets.ModelViewSet):
     queryset = SubTask.objects.all()
     serializer_class = SubtaskSerializer 
 

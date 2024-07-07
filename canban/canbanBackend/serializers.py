@@ -37,15 +37,16 @@ class PublicUserSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     subtasks = SubtaskSerializer(many=True)
-    assigned_users = PublicUserSerializer(many=True)
+    # assigned_users = PublicUserSerializer(many=True)
+    assigned_users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
 
     class Meta:
         model = Task
         fields = '__all__'
 
     def create(self, validated_data):
-        subtasks_data = validated_data.pop('subtasks')
-        assigned_users_data = validated_data.pop('assigned_users')
+        subtasks_data = validated_data.pop('subtasks', [])
+        assigned_users = validated_data.pop('assigned_users')
         task = Task.objects.create(**validated_data)
         for subtask_data in subtasks_data:
             SubTask.objects.create(task=task, **subtask_data)
@@ -58,9 +59,9 @@ class TaskSerializer(serializers.ModelSerializer):
         #-----------------------------------------------------
         # task.assigned_users.set([user.pk for user in assigned_users_data])
         #-----------------------------------------------------
-        assigned_users = [PublicUserSerializer(data=user_data).save() for user_data in assigned_users_data]
+        # assigned_users = [PublicUserSerializer(data=user_data).save() for user_data in assigned_users_data]
         task.assigned_users.set(assigned_users)
-
+        return task
     
     def update(self, instance, validated_data):
         subtasks_data = validated_data.pop('subtasks')
@@ -75,8 +76,8 @@ class TaskSerializer(serializers.ModelSerializer):
         for subtask_data in subtasks_data:
             SubTask.objects.create(task=instance, **subtask_data)
 
-        assigned_users = [User.objects.get(id=user_data['id']) for user_data in assigned_users_data]
-        instance.assigned_users.set(assigned_users)
+        # assigned_users = [User.objects.get(id=user_data['id']) for user_data in assigned_users_data]
+        # instance.assigned_users.set(assigned_users)
         #-----------------------------------------------------
         # instance.assigned_users.set([user.pk for user in assigned_users_data])
 
