@@ -20,6 +20,9 @@ from rest_framework.exceptions import PermissionDenied
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
+    """
+    API endpoint for user registration.
+    """
     serialized = UserSerializer(data=request.data)
     if serialized.is_valid():
         user = serialized.save()
@@ -35,8 +38,8 @@ def register_user(request):
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
-    Dieses ViewSet stellt automatisch `list`, `create`, `retrieve`,
-    `update` und `destroy` Aktionen bereit.
+    This ViewSet automatically provides `list`, `create`, `retrieve`,
+    `update`, and `destroy` actions for tasks.
     """
     queryset = Task.objects.all() 
     serializer_class = TaskSerializer
@@ -44,6 +47,9 @@ class TaskViewSet(viewsets.ModelViewSet):
                           IsOwnerOrReadOnly, permissions.IsAuthenticated] 
     
     def perform_create(self, serializer):
+        """
+        Override create behavior to associate the task creator with the request user.
+        """
         creator = self.request.user
         request_creator_id = self.request.data.get('creator')
         if request_creator_id and str(request_creator_id) != str(creator.id):
@@ -51,6 +57,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.save(creator=creator)
 
     def perform_update(self, serializer):
+        """
+        Override update behavior to check and allow updates only by the task creator.
+        """
         creator = self.request.user
         request_creator_id = self.request.data.get('creator')
         if request_creator_id and str(request_creator_id) != str(creator.id):
@@ -58,18 +67,30 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.save()
         
 class SubTaskViewSet(viewsets.ModelViewSet):
+    """
+    This ViewSet provides `list`, `create`, `retrieve`, `update`, and `destroy` actions for subtasks.
+    """
     queryset = SubTask.objects.all()
     serializer_class = SubtaskSerializer 
 
 
 class PublicUserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This ViewSet provides `list` and `retrieve` actions for publicly viewing users.
+    """
     queryset = User.objects.all()
     serializer_class = PublicUserSerializer 
 
 
 
 class LoginView(ObtainAuthToken):
+    """
+    API endpoint for user login. Inherits from ObtainAuthToken to provide token authentication.
+    """
     def post(self, request, *args, **kwargs):
+        """
+        Handle user login and return authentication token.
+        """
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -83,7 +104,13 @@ class LoginView(ObtainAuthToken):
         
         
 class LogoutView(APIView):
+    """
+    API endpoint for user logout.
+    """
     def post(self, request, format=None):
+        """
+        Handle user logout and provide a success message.
+        """
         logout(request)
         return Response({'message': 'Logout successful'})
     
