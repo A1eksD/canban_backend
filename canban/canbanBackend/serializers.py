@@ -76,6 +76,7 @@ class TaskSerializer(serializers.ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.priority = validated_data.get('priority', instance.priority)
+        instance.category = validated_data.get('category', instance.priority)
         instance.save()
 
         instance.subtasks.all().delete()
