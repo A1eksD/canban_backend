@@ -19,7 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
     
     
 class SubtaskSerializer(serializers.ModelSerializer):
-    # owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
         model = SubTask
         fields = ['id', 'name', 'is_checked']
@@ -37,7 +36,6 @@ class PublicUserSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='creator.username')
     subtasks = SubtaskSerializer(many=True)
-    # assigned_users = PublicUserSerializer(many=True)
     assigned_users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
 
     class Meta:
@@ -50,16 +48,6 @@ class TaskSerializer(serializers.ModelSerializer):
         task = Task.objects.create(**validated_data)
         for subtask_data in subtasks_data:
             SubTask.objects.create(task=task, **subtask_data)
-        # for assigned_users in assigned_users:
-        #     User.objects.create(task=task, **assigned_users)
-        #-----------------------------------------------------
-        # assigned_users = [User.objects.get(id=user_data['id']) for user_data in assigned_users_data]
-        # print(f'Assigned users: {assigned_users}', assigned_users)
-        # task.assigned_users.set(assigned_users)
-        #-----------------------------------------------------
-        # task.assigned_users.set([user.pk for user in assigned_users_data])
-        #-----------------------------------------------------
-        # assigned_users = [PublicUserSerializer(data=user_data).save() for user_data in assigned_users_data]
         task.assigned_users.set(assigned_users)
         return task
     
@@ -71,14 +59,8 @@ class TaskSerializer(serializers.ModelSerializer):
         instance.priority = validated_data.get('priority', instance.priority)
         instance.save()
 
-        # Optionale Logik zum Aktualisieren oder Erstellen von SubTasks
         instance.subtasks.all().delete()
         for subtask_data in subtasks_data:
             SubTask.objects.create(task=instance, **subtask_data)
-
-        # assigned_users = [User.objects.get(id=user_data['id']) for user_data in assigned_users_data]
-        # instance.assigned_users.set(assigned_users)
-        #-----------------------------------------------------
-        # instance.assigned_users.set([user.pk for user in assigned_users_data])
 
         return instance

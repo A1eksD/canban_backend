@@ -1,24 +1,19 @@
-# from django.http import HttpResponseRedirect
-# from django.shortcuts import redirect, render
-from django.forms import ValidationError
+
 from rest_framework import viewsets
 from canbanBackend.models import Task, User, SubTask
 from canbanBackend.permissions import IsOwnerOrReadOnly
 from canbanBackend.serializers import PublicUserSerializer, SubtaskSerializer, TaskSerializer, UserSerializer
-from rest_framework import authentication, permissions
+from rest_framework import  permissions
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from django.contrib.auth import logout
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.exceptions import PermissionDenied
 
 
@@ -45,8 +40,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
     queryset = Task.objects.all() 
     serializer_class = TaskSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,  # Nur authentifizierte Benutzer können Daten ändern
-                          IsOwnerOrReadOnly, permissions.IsAuthenticated]  # Benutzer können nur ihre eigenen Snippets ändern
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, 
+                          IsOwnerOrReadOnly, permissions.IsAuthenticated] 
     
     def perform_create(self, serializer):
         creator = self.request.user
@@ -74,9 +69,6 @@ class PublicUserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class LoginView(ObtainAuthToken):
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
-    # permission_classes = [IsAuthenticated]
-
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})

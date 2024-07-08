@@ -1,6 +1,5 @@
 
 from django.db import models
-from django.conf import settings
 from canbanBackend.class_assest import PRIORITY_CHOICES
 from django.contrib.auth.models import User
 
