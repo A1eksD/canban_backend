@@ -35,7 +35,7 @@ class PublicUserSerializer(serializers.ModelSerializer):
         
         
 class TaskSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source='creator.username')
     subtasks = SubtaskSerializer(many=True)
     # assigned_users = PublicUserSerializer(many=True)
     assigned_users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)

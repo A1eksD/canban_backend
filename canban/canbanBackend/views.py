@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
+from rest_framework.exceptions import PermissionDenied
 
 
 @api_view(['POST'])
@@ -46,9 +46,21 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all() 
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,  # Nur authentifizierte Benutzer können Daten ändern
-                          IsOwnerOrReadOnly, IsAuthenticated]  # Benutzer können nur ihre eigenen Snippets ändern
+                          IsOwnerOrReadOnly, permissions.IsAuthenticated]  # Benutzer können nur ihre eigenen Snippets ändern
     
-    
+    def perform_create(self, serializer):
+        creator = self.request.user
+        request_creator_id = self.request.data.get('creator')
+        if request_creator_id and str(request_creator_id) != str(creator.id):
+            raise PermissionDenied("You cannot create a task for another user.")
+        serializer.save(creator=creator)
+
+    def perform_update(self, serializer):
+        creator = self.request.user
+        request_creator_id = self.request.data.get('creator')
+        if request_creator_id and str(request_creator_id) != str(creator.id):
+            raise PermissionDenied("You cannot update the task for another user.")
+        serializer.save()
         
 class SubTaskViewSet(viewsets.ModelViewSet):
     queryset = SubTask.objects.all()
